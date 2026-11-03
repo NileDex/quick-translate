@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.2
+
+Documentation and publishing only; no code changes.
+
+- README: **Installation** guide (npm, pnpm, yarn, bun, and GitHub Packages) and badges.
+- New **[USAGE_PROMPT.md](./USAGE_PROMPT.md)**: a copy-paste prompt that has an AI coding assistant set up the SDK in your project. It's linked from the README and shipped in the package.
+- Also published to **GitHub Packages** as `@niledex/quick-translate-sdk`.
+- `package.json` now links to the GitHub repository, homepage and issues.
+
 ## 0.2.1
 
 Documentation only; no code changes.

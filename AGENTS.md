@@ -154,7 +154,7 @@ createRoot(el).render(
 // anywhere: const t = useT(); <LanguageSelector />  (both from 'quick-translate-sdk/react')
 ```
 
-`<QuickTranslate>` detects the language (`?lang=` → cookie → browser), loads the first JSON before rendering, and sets `<html lang dir>`. Don't use it in Next.js; use the Next.js files above. Working example: `../react-app`.
+`<QuickTranslate>` detects the language (`?lang=` → cookie → browser), loads the first JSON before rendering, and sets `<html lang dir>`. Don't use it in Next.js; use the Next.js files above.
 
 ## Selector recipes
 

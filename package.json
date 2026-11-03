@@ -1,6 +1,6 @@
 {
   "name": "quick-translate-sdk",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A tiny, very fast, AI-agent-friendly language selector for React and Next.js. Zero dependencies, no flash of the wrong locale.",
   "license": "MIT",
   "author": "Joseph Akpan Sunday",
@@ -155,7 +155,8 @@
     "LICENSE",
     "llms.txt",
     "AGENTS.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "USAGE_PROMPT.md"
   ],
   "packageManager": "pnpm@9.15.4",
   "engines": {
@@ -213,5 +214,13 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NileDex/quick-translate.git"
+  },
+  "homepage": "https://github.com/NileDex/quick-translate#readme",
+  "bugs": {
+    "url": "https://github.com/NileDex/quick-translate/issues"
   }
 }

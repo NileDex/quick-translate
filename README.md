@@ -1,18 +1,63 @@
 # quick-translate-sdk
 
+[![npm version](https://img.shields.io/npm/v/quick-translate-sdk?color=cb3837&logo=npm)](https://www.npmjs.com/package/quick-translate-sdk)
+[![npm downloads](https://img.shields.io/npm/dm/quick-translate-sdk?color=cb3837)](https://www.npmjs.com/package/quick-translate-sdk)
+[![types](https://img.shields.io/npm/types/quick-translate-sdk)](https://www.npmjs.com/package/quick-translate-sdk)
+[![GitHub Packages](https://img.shields.io/badge/GitHub%20Packages-@niledex%2Fquick--translate--sdk-24292f?logo=github)](https://github.com/NileDex/quick-translate/pkgs/npm/quick-translate-sdk)
+[![license](https://img.shields.io/npm/l/quick-translate-sdk)](./LICENSE)
+
 A very fast language selector for **React 18/19** and **Next.js 14/15** that switches your **whole app** to another language instantly, with no reload. Your **AI assistant's replies** switch with it. It ships with a tiny built-in translator and is built to be operated by AI agents.
 
-- **Instant, atomic switch.** Hovering an option prefetches its dictionary. The click flips every `useT()` in the app in a single React commit, so you never see a half-translated page or a reload.
+**[npm](https://www.npmjs.com/package/quick-translate-sdk)** · **[GitHub](https://github.com/NileDex/quick-translate)** · **[Installation](#installation)** · **[Set it up with an AI assistant](#set-it-up-with-an-ai-assistant)** · **[Changelog](./CHANGELOG.md)**
+
+- **Instant, atomic switch.** Every language is preloaded in idle time. The click flips every `useT()` in the app in a single React commit, so you never see a half-translated page or a reload.
 - **No flash of the wrong language.** The server resolves the locale (cookie → `Accept-Language` → default), renders `<html lang dir>`, and the client hydrates from the same value.
 - **Behaves like a regular selector, but faster.** Nothing is lazy-loaded: the menu opens on the first click, and every option is always in the page. Every language is preloaded in idle time, so every switch is synchronous: one frame (16 ms) to respond, and 6–16 ms until the whole page is translated.
 - **Small.** 6.1 kB min+gzip for provider + complete selector (7.1 kB with `<QuickTranslate>` + translator). Zero runtime dependencies, and no language-name data is shipped (names come from `Intl.DisplayNames`, or your own `labels`).
 - **AI replies in the chosen language.** `useAiLanguage()` sends the locale with each AI request, and `getLanguageInstruction()` turns it into a system-prompt instruction for Claude or any other model.
 - **Agent-friendly.** Stable roles and accessible names, `data-qt-*` hooks, an opt-in `window.quickTranslate` API, `?lang=` deep links, and JSON-Schema tool definitions for Anthropic, OpenAI and MCP.
 
+---
+
+## Installation
+
+The package is published as **`quick-translate-sdk`** on [npm](https://www.npmjs.com/package/quick-translate-sdk):
+
+```bash
+npm install quick-translate-sdk
+# or
+pnpm add quick-translate-sdk
+yarn add quick-translate-sdk
+bun add quick-translate-sdk
 ```
-sdk/         this folder: the quick-translate-sdk npm package
-react-app/   React + Vite app that uses it (run it to try everything)
-```
+
+**Requirements:** React 18 or 19 (`react` and `react-dom` are peer dependencies). For Next.js, 14 or 15. Zero runtime dependencies.
+
+<details>
+<summary><b>Install from GitHub Packages instead</b></summary>
+
+The same package is also published to [GitHub Packages](https://github.com/NileDex/quick-translate/pkgs/npm/quick-translate-sdk) as `@niledex/quick-translate-sdk`.
+
+1. GitHub Packages needs a token even for public packages. Create a [personal access token (classic)](https://github.com/settings/tokens) with the **`read:packages`** scope.
+2. Add a `.npmrc` file to your project root:
+   ```ini
+   @niledex:registry=https://npm.pkg.github.com
+   //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+   ```
+3. Set `GITHUB_TOKEN` to that token in your shell or CI, then install it **under the name `quick-translate-sdk`**, so every import in these docs works unchanged:
+   ```bash
+   npm install quick-translate-sdk@npm:@niledex/quick-translate-sdk
+   ```
+
+Don't install it as plain `@niledex/quick-translate-sdk`: the package's files import each other by the name `quick-translate-sdk`.
+
+</details>
+
+**Optional setup command.** `npx quick-translate-sdk init` detects React or Next.js and writes the starter files: config, translation files and, for Next.js, the middleware and provider.
+
+## Set it up with an AI assistant
+
+Using Claude Code, Cursor, Copilot or another coding agent? Copy the prompt from **[USAGE_PROMPT.md](./USAGE_PROMPT.md)** into it. The prompt tells the agent to detect your framework, install the SDK, move your hardcoded text into translation files, translate them, add the language selector, and verify the result. The package also ships **[AGENTS.md](./AGENTS.md)** and **[llms.txt](./llms.txt)**, so the agent can read the exact API from `node_modules/quick-translate-sdk/`.
 
 ---
 
@@ -21,7 +66,7 @@ react-app/   React + Vite app that uses it (run it to try everything)
 **1. Install**
 
 ```bash
-npm i quick-translate-sdk
+npm install quick-translate-sdk
 ```
 
 **2. Wrap your app once**, listing your languages and where their JSON files are:
@@ -68,7 +113,7 @@ That's all. `<QuickTranslate>`:
 
 Options: `defaultLocale`, `locale` (force one), `messages={{ en, fr }}` (all files bundled, no loading), `fallback` (shown while the first file loads), `exposeAgentApi`, `onLocaleChange`.
 
-A working app is in [`../react-app`](../react-app). Run `pnpm install && pnpm dev` there.
+Want an AI assistant to do these three steps in your project? See [Set it up with an AI assistant](#set-it-up-with-an-ai-assistant).
 
 ## Supported languages
 
@@ -590,16 +635,17 @@ What's still true after the 0.2.0 speed work:
 ## Development
 
 ```bash
-# in sdk/
 pnpm i
 pnpm build | test | typecheck | lint | size
 pnpm dev                    # rebuilds on change (tsup --watch)
-npm publish                 # publish quick-translate-sdk (runs the build first)
-pnpm changeset              # or: describe a change; CI opens the release PR, then publishes with provenance
-
-# in react-app/
-pnpm sdk:update && pnpm dev # rebuild the SDK, refresh the app's copy, start on :5173
-pnpm e2e                    # browser tests
 ```
+
+**Releasing a new version**
+
+1. Bump `version` in `package.json` and add an entry to `CHANGELOG.md`.
+2. Publish to npm: `npm publish` (it builds first).
+3. On GitHub, **create a Release** with a tag like `v0.2.1`. The **Publish** workflow then publishes `@niledex/quick-translate-sdk` to GitHub Packages, which makes it appear under "Packages" on the repo page.
+   - If the repo has an `NPM_TOKEN` secret, the workflow also publishes to npm with provenance, unless that version is already there.
+   - Pushing to `main` only runs CI (lint, build, typecheck, tests, size). It never publishes.
 
 MIT © Joseph Akpan Sunday

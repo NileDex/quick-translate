@@ -4,7 +4,7 @@ The built-in `useT()` is optional. If you already use an i18n library, keep it: 
 
 ## Plain JSON (built in, no library)
 
-With `<QuickTranslate>` (React SPA) it is one prop: `messages={(l) => import(\`./messages/${l}.json\`)}`; see `../react-app`. The lower-level form, used with Next.js:
+With `<QuickTranslate>` (React SPA) it is one prop: `messages={(l) => import(\`./messages/${l}.json\`)}` (see the README quick start). The lower-level form, used with Next.js:
 
 ```tsx
 // i18n.ts

@@ -1,0 +1,78 @@
+name: Publish
+
+# Runs when you publish a GitHub Release (or start it by hand from the Actions tab). Pushing code to
+# main never publishes anything.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+concurrency: publish
+
+jobs:
+  # GitHub Packages: shows the package in the repo's "Packages" sidebar. Uses the built-in
+  # GITHUB_TOKEN, so no secret is needed. GitHub requires an owner-scoped name there.
+  github-packages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: "@niledex"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Publish @niledex/quick-translate-sdk to GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm pkg set name=@niledex/quick-translate-sdk
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "@niledex/quick-translate-sdk@$VERSION" version --registry https://npm.pkg.github.com >/dev/null 2>&1; then
+            echo "@niledex/quick-translate-sdk@$VERSION is already on GitHub Packages; nothing to do."
+            exit 0
+          fi
+          npm publish --registry https://npm.pkg.github.com --ignore-scripts
+
+  # npmjs.com: only if an NPM_TOKEN secret exists, and only if this version isn't published yet
+  # (so publishing by hand with `npm publish` and creating a Release afterwards doesn't fail).
+  npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm provenance
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - name: Decide whether to publish
+        id: check
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "No NPM_TOKEN secret: skipping npm (publish by hand with 'npm publish')."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          elif npm view "quick-translate-sdk@$VERSION" version >/dev/null 2>&1; then
+            echo "quick-translate-sdk@$VERSION is already on npm; nothing to do."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.check.outputs.skip == 'false'
+        run: pnpm install --frozen-lockfile && pnpm build
+      - if: steps.check.outputs.skip == 'false'
+        run: npm publish --provenance --access public --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
