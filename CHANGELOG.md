@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1
+
+Documentation only; no code changes.
+
+- README: new **Known limits** section listing what's still true after the 0.2.0 speed work (first-open time, the one-frame switch after a menu selection, bundle size, preloading, browser language-name gaps, untested Next.js setups).
+
 ## 0.2.0
 
 The selector now behaves like a regular language selector, only faster.

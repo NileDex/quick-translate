@@ -1,6 +1,6 @@
 {
   "name": "quick-translate-sdk",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A tiny, very fast, AI-agent-friendly language selector for React and Next.js. Zero dependencies, no flash of the wrong locale.",
   "license": "MIT",
   "author": "Joseph Akpan Sunday",

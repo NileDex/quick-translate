@@ -573,6 +573,20 @@ Bundle sizes: run `pnpm size` here. Lighthouse was measured on the earlier Next.
 - **`aria-label` is "Select language: <current>"**, for example "Select language: Français". It includes the visible text (WCAG 2.5.3) and tells screen readers and AI agents the current value. Lookups by the "Select language" prefix work.
 - **Flags are off by default** (`showFlags` turns them on). Flags are regions, not languages, and Windows shows letters instead of flag emoji.
 
+## Known limits
+
+What's still true after the 0.2.0 speed work:
+
+- **The very first open of the menu takes 24–32 ms**, not one frame. That's the browser's first layout of the open menu, measured in a fresh session. Later opens take 16 ms.
+- **The page switches one frame after a menu selection**, not inside the click. This keeps the click responsive (16 ms) even when the new language is expensive to lay out the first time, the way a native `<select>` behaves. Calling `setLocale()` directly is synchronous.
+- **The bundle is larger than a lazy-loaded design would be.** It's 6.1 kB gzipped for the complete selector, and 7.1 kB with `<QuickTranslate>` and the translator. That's the cost of having nothing lazy.
+- **Preloading downloads every language's dictionary** in idle time. That's cheap for typical files (about 1 kB each). For very large dictionaries or many languages, use `prefetch="intent"`: a language then loads on hover or focus, and a switch may wait for it.
+- **Idle warm-up only knows the selector's own styles and your dictionaries' text.** Text in other fonts, or text that isn't in a dictionary, is still laid out by the browser on first display.
+- **Language names in some browsers come back in English** when the browser lacks data for that language. For example, Chrome shows "Yoruba" for `yo`. Set `labels` for the languages where this matters. With server rendering (Next.js), names can differ between server and browser; without `labels`, the server's text is kept on hydration instead of warning.
+- **Lists over 500 options are windowed** (not all in the page at once). Search still finds everything, and `variant="native"` renders every option.
+- **The Next.js Pages Router setup isn't covered by browser tests**, and neither are the Next.js App Router helpers, since the example app that exercised them was removed. Unit tests cover the middleware.
+- **Speed and Lighthouse numbers come from one Windows machine.** Re-measure in your own app and on the devices you target.
+
 ## Development
 
 ```bash
