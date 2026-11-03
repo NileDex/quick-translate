@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": ".",
+    "types": ["node"],
+    "paths": {
+      "quick-translate-sdk": ["./src/core/index.ts"],
+      "quick-translate-sdk/messages": ["./src/messages/index.ts"],
+      "quick-translate-sdk/ai": ["./src/ai/index.ts"],
+      "quick-translate-sdk/react": ["./src/react/index.ts"],
+      "quick-translate-sdk/react/headless": ["./src/react/headless-entry.ts"]
+    }
+  },
+  "include": ["src", "test", "tsup.config.ts", "vitest.config.ts"]
+}

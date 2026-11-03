@@ -1,0 +1,217 @@
+{
+  "name": "quick-translate-sdk",
+  "version": "0.2.0",
+  "description": "A tiny, very fast, AI-agent-friendly language selector for React and Next.js. Zero dependencies, no flash of the wrong locale.",
+  "license": "MIT",
+  "author": "Joseph Akpan Sunday",
+  "keywords": [
+    "i18n",
+    "locale",
+    "language-selector",
+    "language-switcher",
+    "react",
+    "nextjs",
+    "app-router",
+    "rtl",
+    "intl",
+    "ai-agents",
+    "mcp"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./messages": {
+      "import": {
+        "types": "./dist/messages.d.ts",
+        "default": "./dist/messages.js"
+      },
+      "require": {
+        "types": "./dist/messages.d.cts",
+        "default": "./dist/messages.cjs"
+      }
+    },
+    "./ai": {
+      "import": {
+        "types": "./dist/ai.d.ts",
+        "default": "./dist/ai.js"
+      },
+      "require": {
+        "types": "./dist/ai.d.cts",
+        "default": "./dist/ai.cjs"
+      }
+    },
+    "./react": {
+      "import": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.js"
+      },
+      "require": {
+        "types": "./dist/react.d.cts",
+        "default": "./dist/react.cjs"
+      }
+    },
+    "./react/headless": {
+      "import": {
+        "types": "./dist/react-headless.d.ts",
+        "default": "./dist/react-headless.js"
+      },
+      "require": {
+        "types": "./dist/react-headless.d.cts",
+        "default": "./dist/react-headless.cjs"
+      }
+    },
+    "./next": {
+      "import": {
+        "types": "./dist/next.d.ts",
+        "default": "./dist/next.js"
+      },
+      "require": {
+        "types": "./dist/next.d.cts",
+        "default": "./dist/next.cjs"
+      }
+    },
+    "./next/client": {
+      "import": {
+        "types": "./dist/next-client.d.ts",
+        "default": "./dist/next-client.js"
+      },
+      "require": {
+        "types": "./dist/next-client.d.cts",
+        "default": "./dist/next-client.cjs"
+      }
+    },
+    "./next/action": {
+      "import": {
+        "types": "./dist/next-action.d.ts",
+        "default": "./dist/next-action.js"
+      },
+      "require": {
+        "types": "./dist/next-action.d.cts",
+        "default": "./dist/next-action.cjs"
+      }
+    },
+    "./agent": {
+      "import": {
+        "types": "./dist/agent.d.ts",
+        "default": "./dist/agent.js"
+      },
+      "require": {
+        "types": "./dist/agent.d.cts",
+        "default": "./dist/agent.cjs"
+      }
+    },
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "messages": [
+        "./dist/messages.d.ts"
+      ],
+      "ai": [
+        "./dist/ai.d.ts"
+      ],
+      "react": [
+        "./dist/react.d.ts"
+      ],
+      "react/headless": [
+        "./dist/react-headless.d.ts"
+      ],
+      "next": [
+        "./dist/next.d.ts"
+      ],
+      "next/client": [
+        "./dist/next-client.d.ts"
+      ],
+      "next/action": [
+        "./dist/next-action.d.ts"
+      ],
+      "agent": [
+        "./dist/agent.d.ts"
+      ]
+    }
+  },
+  "bin": {
+    "quick-translate-sdk": "dist/cli.cjs"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "llms.txt",
+    "AGENTS.md",
+    "CHANGELOG.md"
+  ],
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=18.18"
+  },
+  "scripts": {
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsup && node scripts/copy-assets.mjs",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "size": "size-limit",
+    "prepublishOnly": "pnpm build",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish"
+  },
+  "peerDependencies": {
+    "next": ">=14",
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.4",
+    "@changesets/cli": "^2.29.7",
+    "@size-limit/preset-small-lib": "^11.2.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "jsdom": "^26.1.0",
+    "next": "^15.5.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "size-limit": "^11.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

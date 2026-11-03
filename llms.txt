@@ -1,0 +1,68 @@
+# quick-translate-sdk
+
+> Small (≈6 kB gz, nothing lazy-loaded), zero-dependency language selector + translator for React 18/19 and Next.js 14/15. Works like a regular selector: instant first open, every option in the DOM, every language preloaded in idle time, so a switch takes one frame and translates the whole app with no reload. SSR renders the right <html lang dir> (no flash). Built for AI agents: stable roles/names, data-qt-* hooks, window.quickTranslate, ?lang= deep links, JSON-Schema tools.
+
+## Install
+npm i quick-translate-sdk
+npx quick-translate-sdk init   # scaffolds config, messages, middleware, provider (Next.js or Vite)
+
+## Entry points
+- quick-translate-sdk: defineLocales (incl. labels for exact names), resolveLocale, detectLocale, matchLocale (script-aware), parseAcceptLanguage, getDir, getLanguageName, getFlag, createLocaleStore, localizePath (any runtime)
+- quick-translate-sdk/messages: createTranslator(messages, locale) → t(key, values?) (any runtime)
+- quick-translate-sdk/ai: getLanguageInstruction(locale), withLanguage(system, locale), localeFromRequest(config, req), AI_LOCALE_HEADER. Makes your AI assistant reply in the selected language (server, any provider)
+- quick-translate-sdk/react: QuickTranslate (simple SPA setup), LocaleProvider, LanguageSelector, useT, useLocale, useMessages, useAiLanguage, useLocaleSelector, useSetLocale, useLanguageSelector + LanguageSelectorHeadless (headless) (client)
+- quick-translate-sdk/next: createLocaleMiddleware, getLocale, setLocale, generateLocaleParams, parseLocaleParam (server only)
+- quick-translate-sdk/next/client: Next-aware LocaleProvider (+ serverRefresh prop), LanguageSelector, useT, useLocale (client)
+- quick-translate-sdk/next/action: setLocaleAction (server action; no-JS form fallback)
+- quick-translate-sdk/agent: getLocaleToolDefinitions, toOpenAITools, toMCPTools, createLocaleTools
+- quick-translate-sdk/styles.css: optional theme (CSS variables)
+
+## Minimal Next.js App Router
+```ts
+// i18n.ts
+export const locales = defineLocales({ locales: ['en','fr','ar'], defaultLocale: 'en', queryParam: 'lang' });
+export const loadMessages = (l: string) => import(`./messages/${l}.json`).then(m => m.default);
+// middleware.ts
+export default createLocaleMiddleware(locales);
+export const config = { matcher: ['/((?!api|_next|.*\\..*).*)'] };
+// components/locale-providers.tsx  ('use client')
+<LocaleProvider config={locales} initialLocale={locale} messages={messages} loadMessages={loadMessages} serverRefresh={false} exposeAgentApi>{children}</LocaleProvider>
+// app/layout.tsx  (Server Component)
+const locale = await getLocale(locales);
+<html lang={locale} dir={getDir(locale)}><body><LocaleProviders locale={locale} messages={await loadMessages(locale)}>{children}</LocaleProviders></body></html>
+// client component
+const t = useT(); <h1>{t('home.title')}</h1> <LanguageSelector />
+```
+
+## Minimal React (Vite / SPA): one component
+```tsx
+<QuickTranslate locales={['en','fr','ar']} messages={(l) => import(`./messages/${l}.json`)}><App/></QuickTranslate>
+// inside: const t = useT(); <LanguageSelector />   (all from 'quick-translate-sdk/react')
+```
+
+## AI replies in the chosen language
+```ts
+// client
+const ai = useAiLanguage(); fetch('/api/chat', { method: 'POST', headers: { ...ai.headers, 'content-type': 'application/json' }, body });
+// server
+const locale = localeFromRequest(locales, req);
+system: [{ type: 'text', text: BASE, cache_control: { type: 'ephemeral' } }, { type: 'text', text: getLanguageInstruction(locale) }]  // Claude
+system: withLanguage(BASE, locale)  // any other SDK
+```
+
+## LanguageSelector props
+variant 'popover'|'native' · display 'name'|'code' · showFlags · showTranslatedName · showCheck · badges {es:'Preview'} · searchable (bool|threshold=8) · suggested · label · texts · formAction · virtualizeThreshold=500 · onSelect · prefetchMessages
+Provider / QuickTranslate: prefetch 'all' (default: every language preloaded in idle time) | 'intent'
+
+## Browser agents
+- Trigger: role=button, name starts "Select language" (e.g. "Select language: English"); opens role=listbox "Languages" with role=option per locale (all visible, no hover menus). Native variant: role=combobox "Select language".
+- DOM: [data-qt-selector] [data-qt-current="en"] [data-qt-locale="fr"]
+- window.quickTranslate (exposeAgentApi): getLocale(), setLocale(code) → boolean, listLocales() → [{code,name,nativeName,dir,current}]; event 'qt:localechange' {locale, previous}
+- Deep link: ?lang=fr (requires queryParam: 'lang')
+
+## Common mistakes
+- Missing <LocaleProvider>; hooks in Server Components; passing functions from a Server Component to the provider (wrap it in a 'use client' component); importing quick-translate-sdk/next in client code; using quick-translate-sdk/react's provider in Next (use quick-translate-sdk/next/client); forgetting initialLocale with SSR; serverRefresh={false} while still translating in Server Components.
+
+## Docs
+- README.md (API, measured performance, trade-offs)
+- AGENTS.md (setup for coding agents)
