@@ -171,10 +171,11 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "size": "size-limit",
-    "prepublishOnly": "pnpm build",
+    "prepublishOnly": "npm run build",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "pnpm build && changeset publish"
+    "release": "npm run build && changeset publish",
+    "publish:github": "npm run build && node scripts/publish-github.mjs"
   },
   "peerDependencies": {
     "next": ">=14",

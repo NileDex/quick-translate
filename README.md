@@ -644,8 +644,15 @@ pnpm dev                    # rebuilds on change (tsup --watch)
 
 1. Bump `version` in `package.json` and add an entry to `CHANGELOG.md`.
 2. Publish to npm: `npm publish` (it builds first).
-3. On GitHub, **create a Release** with a tag like `v0.2.1`. The **Publish** workflow then publishes `@niledex/quick-translate-sdk` to GitHub Packages, which makes it appear under "Packages" on the repo page.
-   - If the repo has an `NPM_TOKEN` secret, the workflow also publishes to npm with provenance, unless that version is already there.
-   - Pushing to `main` only runs CI (lint, build, typecheck, tests, size). It never publishes.
+3. Publish to GitHub Packages (as `@niledex/quick-translate-sdk`, so it appears under "Packages" on the repo page). Either:
+   - **From GitHub:** create a Release with a tag like `v0.2.2`. The **Publish** workflow publishes it using the built-in `GITHUB_TOKEN`. If the repo has an `NPM_TOKEN` secret, it also publishes to npm with provenance, unless that version is already there.
+   - **From your computer:** run `npm run publish:github` (or `pnpm publish:github`). It builds, temporarily switches the name to `@niledex/quick-translate-sdk`, publishes, and always switches it back. The first time, log in with a [personal access token (classic)](https://github.com/settings/tokens) that has the **`write:packages`** scope, used as the password:
+     ```bash
+     npm login --scope=@niledex --auth-type=legacy --registry=https://npm.pkg.github.com
+     ```
+     Add `-- --dry-run` to preview without uploading: `npm run publish:github -- --dry-run`.
+4. After the **first** GitHub Packages publish, open the package on GitHub (**Packages → quick-translate-sdk → Package settings**) and check that its visibility is **Public**. GitHub makes new packages private by default. A package linked to a public repo usually inherits public visibility, but confirm it once.
+
+Pushing to `main` only runs CI (lint, build, typecheck, tests, size). It never publishes.
 
 MIT © Joseph Akpan Sunday
